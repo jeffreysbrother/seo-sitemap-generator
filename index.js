@@ -28,6 +28,8 @@ var c = new Crawler();
 const letters = [...'abc'];
 let lastNameURLS = [];
 
+
+// crawl letter pages to retrieve last name URLs and add these to an array
 let tcgCrawl = new Promise((resolve, reject) => {
     letters.forEach((el, index, array) => {
         c.queue([{
@@ -61,9 +63,10 @@ let tcgCrawl = new Promise((resolve, reject) => {
     });
 });
 
+
+// crawl last name pages and write result page URLs to sitemap
 tcgCrawl.then(() => {
     lastNameURLS.forEach((el, index, array) => {
-        console.log(el);
         c.queue([{
             uri: `${el}`,
             jQuery: false,
