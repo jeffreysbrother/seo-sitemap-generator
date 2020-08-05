@@ -13,14 +13,12 @@ const wrapStart = `\n<url>
 const wrapEnd = `</loc>
 </url>`;
 
-
+// if sitemap already exists, delete it
 if (fs.existsSync(sitemapName)) {
-    // if sitemap already exists, delete it
     fs.unlinkSync(sitemapName);
 }
 
 let stream = fs.createWriteStream(sitemapName);
-
 stream.write(sitemapHeader);
  
 var c = new Crawler();
@@ -47,13 +45,13 @@ let tcgCrawl = new Promise((resolve, reject) => {
                     let dom = new JSDOM(res.body);
         
                     dom.window.document.querySelectorAll(".bc-a").forEach(el => {
-                        // need to visit every page here
                         lastNameURLS.push(`https://www.instantcheckmate.com${el.getAttribute('href')}`);
                     });
                     
                 }
                 done();
 
+                // resolve promise when forEach iteration is complete
                 if (index === array.length - 1) {
                     resolve();
                 }
@@ -88,6 +86,7 @@ tcgCrawl.then(() => {
                 }
                 done();
 
+                // append final XML tag to file
                 if (index === array.length - 1) {
                     stream.write(sitemapFooter);
                 }
