@@ -1,18 +1,19 @@
 var Crawler = require("crawler");
-const jsdom = require("jsdom");
+let jsdom = require("jsdom");
 const { JSDOM } = jsdom;
  
 var c = new Crawler();
-const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
+// const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
+const alphabet = [...'abc'];
 let results = [];
 
-new Promise((resolve, reject) => {
-    alphabet.forEach(el => {
+let tcgCrawl = new Promise((resolve, reject) => {
+    alphabet.forEach((el, index, array) => {
         c.queue([{
-            uri: 'https://www.instantcheckmate.com/people/s/',
+            uri: `https://www.instantcheckmate.com/people/${el}/`,
             jQuery: false,
             rateLimit: 2000,
-            maxConnections: 1,
+            maxConnections: 26,
          
             callback: function (error, res, done) {
         
@@ -20,7 +21,7 @@ new Promise((resolve, reject) => {
                     console.log(error);
                 } else {
         
-                    const dom = new JSDOM(res.body);
+                    let dom = new JSDOM(res.body);
         
                     dom.window.document.querySelectorAll(".bc-a").forEach(el => {
                         results.push('https://www.truthfinder.com' + el.getAttribute('href'));
@@ -28,10 +29,16 @@ new Promise((resolve, reject) => {
                     
                 }
                 done();
-                resolve();
+
+                if (index === array.length - 1) {
+                    resolve();
+                }
             }
+
         }]);
     });
-}).then(() => {
+});
+
+tcgCrawl.then(() => {
     console.log(results);
 });
