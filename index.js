@@ -1,6 +1,27 @@
 var Crawler = require("crawler");
 let jsdom = require("jsdom");
+let fs = require("fs");
 const { JSDOM } = jsdom;
+
+const sitemapName = 'sitemap.xml';
+
+const sitemapHeader = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+const sitemapFooter = '\n</urlset>';
+
+const wrapStart = `\n<url>
+\t<loc>`;
+const wrapEnd = `</loc>
+</url>`;
+
+
+if (fs.existsSync(sitemapName)) {
+    // if sitemap already exists, delete it
+    fs.unlinkSync(sitemapName);
+}
+
+let stream = fs.createWriteStream(sitemapName);
+
+stream.write(sitemapHeader);
  
 var c = new Crawler();
 // const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
@@ -24,13 +45,15 @@ let tcgCrawl = new Promise((resolve, reject) => {
                     let dom = new JSDOM(res.body);
         
                     dom.window.document.querySelectorAll(".bc-a").forEach(el => {
-                        results.push('https://www.truthfinder.com' + el.getAttribute('href'));
+                        // need to visit every page here
+                        stream.write(`${wrapStart}https://www.truthfinder.com${el.getAttribute('href')}${wrapEnd}`);
                     });
                     
                 }
                 done();
 
                 if (index === array.length - 1) {
+                    stream.write(sitemapFooter);
                     resolve();
                 }
             }
