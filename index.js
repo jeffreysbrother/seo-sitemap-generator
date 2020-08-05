@@ -24,12 +24,12 @@ let stream = fs.createWriteStream(sitemapName);
 stream.write(sitemapHeader);
  
 var c = new Crawler();
-// const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
-const alphabet = [...'abc'];
-let results = [];
+// const letters = [...'abcdefghijklmnopqrstuvwxyz'];
+const letters = [...'abc'];
+let lastNameURLS = [];
 
 let tcgCrawl = new Promise((resolve, reject) => {
-    alphabet.forEach((el, index, array) => {
+    letters.forEach((el, index, array) => {
         c.queue([{
             uri: `https://www.instantcheckmate.com/people/${el}/`,
             jQuery: false,
@@ -46,14 +46,13 @@ let tcgCrawl = new Promise((resolve, reject) => {
         
                     dom.window.document.querySelectorAll(".bc-a").forEach(el => {
                         // need to visit every page here
-                        stream.write(`${wrapStart}https://www.truthfinder.com${el.getAttribute('href')}${wrapEnd}`);
+                        lastNameURLS.push(`https://www.instantcheckmate.com${el.getAttribute('href')}`);
                     });
                     
                 }
                 done();
 
                 if (index === array.length - 1) {
-                    stream.write(sitemapFooter);
                     resolve();
                 }
             }
@@ -63,5 +62,34 @@ let tcgCrawl = new Promise((resolve, reject) => {
 });
 
 tcgCrawl.then(() => {
-    console.log(results);
+    lastNameURLS.forEach((el, index, array) => {
+        console.log(el);
+        c.queue([{
+            uri: `${el}`,
+            jQuery: false,
+            rateLimit: 2000,
+            maxConnections: 26,
+         
+            callback: function (error, res, done) {
+        
+                if (error) {
+                    console.log(error);
+                } else {
+        
+                    let dom = new JSDOM(res.body);
+        
+                    dom.window.document.querySelectorAll(".bc-a").forEach(el => {
+                        stream.write(`${wrapStart}https://www.instantcheckmate.com${el.getAttribute('href')}${wrapEnd}`);
+                    });
+                    
+                }
+                done();
+
+                if (index === array.length - 1) {
+                    stream.write(sitemapFooter);
+                }
+            }
+
+        }]);
+    });
 });
