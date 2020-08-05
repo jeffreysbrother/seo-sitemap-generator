@@ -121,9 +121,8 @@ function secondCrawl() {
 
 function lastStep() {
     return new Promise ((resolve, reject) => {
-        fs.appendFile(xmlFile, sitemapFooter, function () {
-            resolve();
-        })
+        fs.appendFileSync(xmlFile, sitemapFooter);
+        resolve();
     });
 }
 
