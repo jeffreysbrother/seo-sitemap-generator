@@ -3,14 +3,6 @@ let jsdom = require("jsdom");
 let fs = require("fs");
 const { JSDOM } = jsdom;
 
-// TODO 
-// last xml tag only working some of the time
-// doesn't generate the same number of files every time (could this be due to maxConnections and rateLimit? see docs)
-// maybe put all files in a folder
-// log stuff on completion
-//    * # of sitemaps created
-//    * sitemap name, # of entries for each
-
 const sitemapPrefix = 'icm-ppl-pdnames-sitemap-';
 let sitemapSuffix   = 1;
 
@@ -49,7 +41,7 @@ function initialCrawl() {
                         dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, arr) => {
                             lastNameURLS.push(`https://www.instantcheckmate.com${path.getAttribute('href')}`);
 
-                            // resolve promise when forEach iteration is complete
+                            // resolve promise when both forEach iterations are complete
                             if (index === array.length - 1 && ind === arr.length - 1) {
                                 resolve();
                             }
@@ -105,7 +97,7 @@ function secondCrawl() {
                                 sitemapSuffix++;
                             }
 
-                            // resolve promise when forEach iteration is complete
+                            // resolve promise when both forEach iterations are complete
                             if (i === arr.length - 1 && ind === ar.length - 1) {
                                 resolve();
                             }
