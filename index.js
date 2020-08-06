@@ -4,7 +4,6 @@ let fs = require("fs");
 const { JSDOM } = jsdom;
 
 // TODO 
-// please wait
 // last xml tag only working some of the time
 // maybe put all files in a folder
 // log stuff on completion
@@ -47,6 +46,7 @@ function initialize() {
 // crawl letter pages to retrieve last name URLs and add these to an array
 function initialCrawl() {
     return new Promise((resolve, reject) => {
+        console.log('Crawl started...');
         letters.forEach((letter, index, array) => {
             c.queue([{
                 uri: `https://www.instantcheckmate.com/people/${letter}/`,
@@ -115,9 +115,9 @@ function secondCrawl() {
                             fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, `${wrapStart}https://www.instantcheckmate.com${path.getAttribute('href')}${wrapEnd}`);
 
                             // add sitemapFooter
-                            if (entryCounter === 10000 || (ind === ar.length - 1 && i === arr.length - 1)) {
-                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapFooter);
-                            }
+                            // if (entryCounter === 10000 || (ind === ar.length - 1 && i === arr.length - 1)) {
+                            //     fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapFooter);
+                            // }
 
                             // resolve promise when forEach iteration is complete
                             if (i === arr.length - 1 && ind === ar.length - 1) {
@@ -138,6 +138,18 @@ function secondCrawl() {
     });
 }
 
+function prepend() {
+    return new Promise ((resolve, reject) => {
+        for (let i = 1; i <= sitemapSuffix; i++) {
+            fs.appendFileSync(`${sitemapPrefix}${i}.xml`, sitemapFooter);
+
+            if (i === sitemapSuffix) {
+                resolve();
+            }
+        }
+    });
+}
+
 // append final XML tag to file. this is not working without setTimeout()
 // function lastStep() {
 //     return new Promise ((resolve, reject) => {
@@ -151,5 +163,6 @@ function secondCrawl() {
 initialize()
     .then(() => initialCrawl())
     .then(() => secondCrawl())
+    .then(() => prepend())
     // .then(() => lastStep())
     .then(() => console.log('complete'));

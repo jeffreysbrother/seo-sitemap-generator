@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "crawler": "^1.2.1",
-    "jsdom": "^15.0.0"
+    "jsdom": "^15.0.0",
+    "prepend-file": "^2.0.0"
   }
 }
