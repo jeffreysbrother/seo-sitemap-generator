@@ -36,8 +36,6 @@ function initialCrawl() {
             c.queue([{
                 uri: `https://www.instantcheckmate.com/people/${letter}/`,
                 jQuery: false,
-                rateLimit: 2000,
-                maxConnections: 26,
             
                 callback: function (error, res, done) {
             
@@ -74,8 +72,6 @@ function secondCrawl() {
             c.queue([{
                 uri: `${el}`,
                 jQuery: false,
-                rateLimit: 2000,
-                maxConnections: 26,
             
                 callback: function (error, res, done) {
             
@@ -86,11 +82,6 @@ function secondCrawl() {
                         let dom = new JSDOM(res.body);
             
                         dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, ar) => {
-                            // max number of entries for an XML files is 50,000
-                            if (entryCounter === 10000) {
-                                entryCounter = 0;
-                                sitemapSuffix++;
-                            }
 
                             // add sitemapHeader
                             if (entryCounter === 0) {
@@ -99,17 +90,23 @@ function secondCrawl() {
 
                             fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, `${wrapStart}https://www.instantcheckmate.com${path.getAttribute('href')}${wrapEnd}`);
 
+                            entryCounter++;
+
                             // add sitemapFooter
-                            if (entryCounter === 10000 || (ind === ar.length - 1 && i === arr.length - 1)) {
+                            if (entryCounter === 5000 || (ind === ar.length - 1 && i === arr.length - 1)) {
                                 fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapFooter);
+                            }
+
+                            // max number of entries for an XML files is 50,000
+                            if (entryCounter === 5000) {
+                                entryCounter = 0;
+                                sitemapSuffix++;
                             }
 
                             // resolve promise when forEach iteration is complete
                             if (i === arr.length - 1 && ind === ar.length - 1) {
                                 resolve();
                             }
-
-                            entryCounter++;
                         });
                         
                     }
