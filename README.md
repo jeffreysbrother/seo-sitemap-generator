@@ -32,4 +32,5 @@ Instead of crawling the first page, the tool simply generates an array of letter
 
 * Naming convention for generated XML files: `icm-ppl-pdnames-sitemap-01.xml`, with an incremented trailing digit.
 * This tool will scrape the pages of a website's dev enironment, but populate a sitemap with its corresponding production URLs.
-
+* All files will be generated in the root of the project directory.
+* Currently, we must manually delete all existing sitemap files prior to running the generator. Failure to do this will result in data being appending to existing files.
