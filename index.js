@@ -5,7 +5,7 @@ const { JSDOM } = jsdom;
 
 // TODO 
 // last xml tag only working some of the time
-// doesn't generate the same number of files every time
+// doesn't generate the same number of files every time (could this be due to maxConnections and rateLimit? see docs)
 // maybe put all files in a folder
 // log stuff on completion
 //    * # of sitemaps created
@@ -23,6 +23,7 @@ const wrapEnd       = '</loc>\n\t</url>';
 const letters       = [...'abc'];
 let lastNameURLS    = [];
 let entryCounter    = 0;
+const maxEntries    = 5000;
 
 
 let c = new Crawler();
@@ -83,22 +84,23 @@ function secondCrawl() {
             
                         dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, ar) => {
 
-                            // add sitemapHeader
+                            // write sitemapHeader to file
                             if (entryCounter === 0) {
-                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapHeader);
+                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, sitemapHeader);
                             }
 
-                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, `${wrapStart}https://www.instantcheckmate.com${path.getAttribute('href')}${wrapEnd}`);
+                            // write URL to file
+                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, `${wrapStart}https://www.instantcheckmate.com${path.getAttribute('href')}${wrapEnd}`);
 
                             entryCounter++;
 
-                            // add sitemapFooter
-                            if (entryCounter === 5000 || (ind === ar.length - 1 && i === arr.length - 1)) {
-                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapFooter);
+                            // write sitemapFooter to file
+                            if (entryCounter === maxEntries || (ind === ar.length - 1 && i === arr.length - 1)) {
+                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, sitemapFooter);
                             }
 
-                            // max number of entries for an XML files is 50,000
-                            if (entryCounter === 5000) {
+                            // reset counter, increment suffix
+                            if (entryCounter === maxEntries) {
                                 entryCounter = 0;
                                 sitemapSuffix++;
                             }
@@ -122,4 +124,4 @@ function secondCrawl() {
 
 initialCrawl()
     .then(() => secondCrawl())
-    .then(() => console.log('complete'));
+    .then(() => console.log(`Complete! ${sitemapSuffix} files created.`));
