@@ -5,14 +5,14 @@ const { JSDOM } = jsdom;
 
 // TODO 
 // please wait
-// formatting
-// multiple sitemaps
+// last xml tag only working some of the time
+// maybe put all files in a folder
 // log stuff on completion
 //    * # of sitemaps created
 //    * sitemap name, # of entries for each
 
 const sitemapPrefix = 'icm-ppl-pdnames-sitemap-';
-const xmlFile       = `${sitemapPrefix}.xml`;
+let sitemapSuffix   = 1;
 
 const sitemapHeader = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 const sitemapFooter = '\n</urlset>';
@@ -20,24 +20,25 @@ const wrapStart     = '\n\t<url>\n\t\t<loc>';
 const wrapEnd       = '</loc>\n\t</url>';
 
 // const letters       = [...'abcdefghijklmnopqrstuvwxyz'];
-const letters       = [...'ab'];
+const letters       = [...'abc'];
 let lastNameURLS    = [];
+let entryCounter    = 0;
 
 let c = new Crawler();
 
 function initialize() {
     return new Promise((resolve, reject) => {
         // if sitemap already exists, delete it.
-        if (fs.existsSync(xmlFile)) {
-            fs.unlinkSync(xmlFile);
+        if (fs.existsSync(`${sitemapPrefix}.xml`)) {
+            fs.unlinkSync(`${sitemapPrefix}.xml`);
         }
 
         // create empty file
-        fs.openSync(xmlFile, 'w');
+        // fs.openSync(`${sitemapPrefix}.xml`, 'w');
 
-        fs.appendFile(xmlFile, sitemapHeader, function () {
+        // fs.appendFile(`${sitemapPrefix}.xml`, sitemapHeader, function () {
             resolve();
-        });
+        // });
 
     });
 }
@@ -61,18 +62,18 @@ function initialCrawl() {
             
                         let dom = new JSDOM(res.body);
             
-                        dom.window.document.querySelectorAll(".bc-a").forEach(path => {
+                        dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, arr) => {
                             lastNameURLS.push(`https://www.instantcheckmate.com${path.getAttribute('href')}`);
+
+                            // resolve promise when forEach iteration is complete
+                            if (index === array.length - 1 && ind === arr.length - 1) {
+                                resolve();
+                            }
                         });
                         
                     }
 
                     done();
-
-                    // resolve promise when forEach iteration is complete
-                    if (index === array.length - 1) {
-                        resolve();
-                    }
                 }
 
             }]);
@@ -100,17 +101,35 @@ function secondCrawl() {
                         let dom = new JSDOM(res.body);
             
                         dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, ar) => {
-                            fs.appendFileSync(xmlFile, `${wrapStart}https://www.instantcheckmate.com${path.getAttribute('href')}${wrapEnd}`);
+                            // max number of entries for an XML files is 50,000
+                            if (entryCounter > 10000) {
+                                entryCounter = 0;
+                                sitemapSuffix++;
+                            }
+
+                            // add sitemapHeader
+                            if (entryCounter === 0) {
+                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapHeader);
+                            }
+
+                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, `${wrapStart}https://www.instantcheckmate.com${path.getAttribute('href')}${wrapEnd}`);
+
+                            // add sitemapFooter
+                            if (entryCounter === 10000 || (ind === ar.length - 1 && i === arr.length - 1)) {
+                                fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix}.xml`, sitemapFooter);
+                            }
+
+                            // resolve promise when forEach iteration is complete
+                            if (i === arr.length - 1 && ind === ar.length - 1) {
+                                resolve();
+                            }
+
+                            entryCounter++;
                         });
                         
                     }
 
                     done();
-
-                    // resolve promise when forEach iteration is complete
-                    if (i === arr.length - 1) {
-                        resolve();
-                    }
 
                 }
 
@@ -119,15 +138,18 @@ function secondCrawl() {
     });
 }
 
-function lastStep() {
-    return new Promise ((resolve, reject) => {
-        fs.appendFileSync(xmlFile, sitemapFooter);
-        resolve();
-    });
-}
+// append final XML tag to file. this is not working without setTimeout()
+// function lastStep() {
+//     return new Promise ((resolve, reject) => {
+//         setTimeout(() => {
+//             fs.appendFileSync(`${sitemapPrefix}.xml`, sitemapFooter);
+//             resolve();
+//         }, 1000)
+//     });
+// }
 
 initialize()
     .then(() => initialCrawl())
     .then(() => secondCrawl())
-    .then(() => lastStep())  // append final XML tag to file. this is not working
+    // .then(() => lastStep())
     .then(() => console.log('complete'));
