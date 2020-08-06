@@ -1,10 +1,11 @@
-var Crawler = require("crawler");
+let Crawler = require("crawler");
 let jsdom = require("jsdom");
 let fs = require("fs");
-const { JSDOM } = jsdom;
+let { JSDOM } = jsdom;
 
-const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-const devDomain = config.devDomain;
+const config        = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+const devDomain     = config.devDomain;
+const prodDomain    = config.prodDomain;
 
 const sitemapPrefix = 'icm-ppl-pdnames-sitemap-';
 let sitemapSuffix   = 1;
@@ -14,11 +15,11 @@ const sitemapFooter = '\n</urlset>';
 const wrapStart     = '\n\t<url>\n\t\t<loc>';
 const wrapEnd       = '</loc>\n\t</url>';
 
-// const letters       = [...'abcdefghijklmnopqrstuvwxyz'];
-const letters       = [...'abc'];
+const letters       = [...'abcdefghijklmnopqrstuvwxyz'];
+// const letters       = [...'abcd'];
 let lastNameURLS    = [];
 let entryCounter    = 0;
-const maxEntries    = 5000;
+const maxEntries    = 50000;
 
 
 let c = new Crawler();
@@ -90,7 +91,7 @@ function secondCrawl() {
                             entryCounter++;
 
                             // write sitemapFooter to file
-                            if (entryCounter === maxEntries || (ind === ar.length - 1 && i === arr.length - 1)) {
+                            if (entryCounter >= maxEntries || (ind === ar.length - 1 && i === arr.length - 1)) {
                                 fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, sitemapFooter);
                             }
 
