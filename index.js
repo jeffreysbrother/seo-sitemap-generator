@@ -2,8 +2,9 @@ var Crawler = require("crawler");
 let jsdom = require("jsdom");
 let fs = require("fs");
 const { JSDOM } = jsdom;
+
 const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-const siteName = config.siteName;
+const devDomain = config.devDomain;
 
 const sitemapPrefix = 'icm-ppl-pdnames-sitemap-';
 let sitemapSuffix   = 1;
@@ -29,7 +30,7 @@ function initialCrawl() {
         console.log('Crawl started...');
         letters.forEach((letter, index, array) => {
             c.queue([{
-                uri: `${siteName}/people/${letter}/`,
+                uri: `${devDomain}/people/${letter}/`,
                 jQuery: false,
             
                 callback: function (error, res, done) {
@@ -41,7 +42,7 @@ function initialCrawl() {
                         let dom = new JSDOM(res.body);
             
                         dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, arr) => {
-                            lastNameURLS.push(`${siteName}${path.getAttribute('href')}`);
+                            lastNameURLS.push(`${prodDomain}${path.getAttribute('href')}`);
 
                             // resolve promise when both forEach iterations are complete
                             if (index === array.length - 1 && ind === arr.length - 1) {
@@ -84,7 +85,7 @@ function secondCrawl() {
                             }
 
                             // write URL to file
-                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, `${wrapStart}${siteName}${path.getAttribute('href')}${wrapEnd}`);
+                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, `${wrapStart}${prodDomain}${path.getAttribute('href')}${wrapEnd}`);
 
                             entryCounter++;
 
