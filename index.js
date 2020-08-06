@@ -5,6 +5,7 @@ const { JSDOM } = jsdom;
 
 // TODO 
 // last xml tag only working some of the time
+// doesn't generate the same number of files every time
 // maybe put all files in a folder
 // log stuff on completion
 //    * # of sitemaps created
@@ -86,7 +87,7 @@ function secondCrawl() {
             
                         dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, ar) => {
                             // max number of entries for an XML files is 50,000
-                            if (entryCounter > 10000) {
+                            if (entryCounter === 10000) {
                                 entryCounter = 0;
                                 sitemapSuffix++;
                             }
@@ -122,30 +123,6 @@ function secondCrawl() {
     });
 }
 
-// function prepend() {
-//     return new Promise ((resolve, reject) => {
-//         for (let i = 1; i <= sitemapSuffix; i++) {
-//             fs.appendFileSync(`${sitemapPrefix}${i}.xml`, sitemapFooter);
-
-//             if (i === sitemapSuffix) {
-//                 resolve();
-//             }
-//         }
-//     });
-// }
-
-// append final XML tag to file. this is not working without setTimeout()
-// function lastStep() {
-//     return new Promise ((resolve, reject) => {
-//         setTimeout(() => {
-//             fs.appendFileSync(`${sitemapPrefix}.xml`, sitemapFooter);
-//             resolve();
-//         }, 1000)
-//     });
-// }
-
 initialCrawl()
     .then(() => secondCrawl())
-    // .then(() => prepend())
-    // .then(() => lastStep())
     .then(() => console.log('complete'));
