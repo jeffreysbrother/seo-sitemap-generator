@@ -7,13 +7,18 @@ const config        = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 const devDomain     = config.devDomain;
 const prodDomain    = config.prodDomain;
 
+// remove everything after "T"
+// example without replace(): 2020-08-07T21:33:03.899Z
+const date = new Date().toISOString().replace(/\T.*/,'');
+
 const sitemapPrefix = 'icm-ppl-pdnames-sitemap-';
 let sitemapSuffix   = 1;
 
 const sitemapHeader = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 const sitemapFooter = '\n</urlset>';
-const wrapStart     = '\n\t<url>\n\t\t<loc>';
-const wrapEnd       = '</loc>\n\t</url>';
+const wrapStart     = '\n\t<url>\n\t\t';
+const wrapEnd       = '\n\t</url>';
+const lastMod       = `\n\t\t<lastmod>${date}</lastmod>`;
 
 const letters       = [...'abcdefghijklmnopqrstuvwxyz'];
 let lastNameURLS    = [];
@@ -71,19 +76,21 @@ function lastNameCrawl() {
         
                     dom.window.document.querySelectorAll(".bc-a").forEach((path, ind, ar) => {
 
+                        let targetFile = `${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`;
+
                         // write sitemapHeader to file
                         if (entryCounter === 0) {
-                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, sitemapHeader);
+                            fs.appendFileSync(targetFile, sitemapHeader);
                         }
 
-                        // write URL to file
-                        fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, `${wrapStart}${prodDomain}${path.getAttribute('href')}${wrapEnd}`);
+                        // write URL to file (along with some XML tags)
+                        fs.appendFileSync(targetFile, `${wrapStart}<loc>${prodDomain}${path.getAttribute('href')}</loc>${lastMod}${wrapEnd}`);
 
                         entryCounter++;
 
                         // write sitemapFooter to file when maximum number of entires has been reached
                         if (entryCounter >= maxEntries) {
-                            fs.appendFileSync(`${sitemapPrefix}${sitemapSuffix.toString().padStart(2, '0')}.xml`, sitemapFooter);
+                            fs.appendFileSync(targetFile, sitemapFooter);
                         }
 
                         // reset counter, increment suffix
