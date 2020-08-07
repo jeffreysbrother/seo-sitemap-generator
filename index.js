@@ -33,6 +33,7 @@ function initialCrawl() {
             c.queue([{
                 uri: `${devDomain}/people/${letter}/`,
                 jQuery: false,
+                rateLimit: 2000,
             
                 callback: function (error, res, done) {
             
@@ -69,6 +70,7 @@ function secondCrawl() {
             c.queue([{
                 uri: `${el}`,
                 jQuery: false,
+                rateLimit: 2000,
             
                 callback: function (error, res, done) {
             
