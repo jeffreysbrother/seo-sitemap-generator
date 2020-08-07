@@ -45,4 +45,4 @@ Instead of crawling the first page, the tool simply generates an array of letter
 * Fix above "known issues"
 * Log more detailed info upon completion
 * Handle errors in a smarter way
-* Handle pagination (as opposed to requiring that the callable must be modified prior to running)
+* Handle pagination (instead of requiring that the callable be modified prior to running)
