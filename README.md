@@ -4,14 +4,14 @@ This is a Node utility that crawls links in order to generate a sitemap of resul
 
 ```xml
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://www.website.com/people/james-allen/</loc>
+        <lastmod>2020-08-07</lastmod>
+    </url>
 	<url>
-		<loc>https://www.website.com/people/james-allen/</loc>
-		<lastmod>2020-08-07</lastmod>
-	</url>
-	<url>
-		<loc>https://www.website.com/people/robert-allen/</loc>
-		<lastmod>2020-08-07</lastmod>
-	</url>
+        <loc>https://www.website.com/people/robert-allen/</loc>
+        <lastmod>2020-08-07</lastmod>
+    </url>
     ...
 </urlset>
 ```
