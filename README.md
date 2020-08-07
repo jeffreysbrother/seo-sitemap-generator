@@ -37,12 +37,9 @@ Instead of crawling the first page, the tool simply generates an array of letter
 
 ### Known Issues
 
-* The last sitemap generated fails to include a closing `</urlset>` tag.
-* Errors appear to be causing a letter category (e.g. last name starting with "L")--either partially or entirely--to be omitted from the sitemap.
+* Errors appear to be causing a letter category (e.g. last name starting with "L")--either partially or entirely--to be omitted from the sitemap. Example: `error: CRAWLER Error Error: ESOCKETTIMEDOUT when fetching ${url}`. This might just be a failed response and not an issue with the tool. However, we should look into this in the future.
 
 ### Future Features
 
-* Fix above "known issues"
-* Log more detailed info upon completion
-* Handle errors in a smarter way
-* Handle pagination (instead of requiring that the callable be modified prior to running)
+* Log more detailed info upon completion.
+* Handle pagination (instead of requiring that the callable be modified prior to running).
