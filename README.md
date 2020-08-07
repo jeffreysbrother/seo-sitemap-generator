@@ -26,13 +26,13 @@ Instead of crawling the first page, the tool simply generates an array of letter
 ### Running the Sitemap Generator
 
 1. In your development environment, disable pagination on each intermediary page (page 2 referenced above) _prior_ to running the sitemap generator. This can be accomplished by commenting out this line in the PHP callable: `$buckets = array_slice($buckets, ($page * 100 - 100), 100);`. This will ensure that every link previously included on paginated pages will appear on the first page.
-2. run `node index.js` in the root of the project directory.
+2. run `node index.js` in the root directory.
 
 ### Other Details
 
-* Naming convention for generated XML files: `icm-ppl-pdnames-sitemap-01.xml`, with an incremented trailing digit.
+* Naming convention for generated XML files: `icm-ppl-pdnames-sitemap-01.xml`, with an incremented trailing digit for each subsequent file.
 * This tool will scrape the pages of a website's dev enironment, but populate a sitemap with its corresponding production URLs.
-* All files will be generated in the root of the project directory.
+* All files will be generated in the root directory.
 * Currently, we must manually delete all existing sitemap files prior to running the generator. Failure to do this will result in data being appending to existing files.
 
 ### Known Issues
