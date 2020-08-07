@@ -16,7 +16,7 @@ const wrapStart     = '\n\t<url>\n\t\t<loc>';
 const wrapEnd       = '</loc>\n\t</url>';
 
 const letters       = [...'abcdefghijklmnopqrstuvwxyz'];
-// const letters       = [...'abcd'];
+// const letters       = [...'abc'];
 let lastNameURLS    = [];
 let entryCounter    = 0;
 const maxEntries    = 50000;
@@ -122,4 +122,4 @@ function secondCrawl() {
 
 initialCrawl()
     .then(() => secondCrawl())
-    .then(() => console.log(`Complete! ${sitemapSuffix} files created.`));
+    .then(() => console.log(`Complete! ${sitemapSuffix} file${sitemapSuffix > 1 ? 's' : ''} created.`));
