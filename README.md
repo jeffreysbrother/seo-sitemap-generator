@@ -34,3 +34,15 @@ Instead of crawling the first page, the tool simply generates an array of letter
 * This tool will scrape the pages of a website's dev enironment, but populate a sitemap with its corresponding production URLs.
 * All files will be generated in the root of the project directory.
 * Currently, we must manually delete all existing sitemap files prior to running the generator. Failure to do this will result in data being appending to existing files.
+
+### Known Issues
+
+* The last sitemap generated fails to include a closing `</urlset>` tag.
+* Errors appear to be causing a letter category (e.g. last name starting with "L")--either partially or entirely--to be omitted from the sitemap.
+
+### Future Features
+
+* Fix above "known issues"
+* Log more detailed info upon completion
+* Handle errors in a smarter way
+* Handle pagination (as opposed to requiring that the callable must be modified prior to running)
