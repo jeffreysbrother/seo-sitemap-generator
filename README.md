@@ -8,7 +8,7 @@ This is a Node utility that crawls links in order to generate a sitemap of resul
         <loc>https://www.website.com/people/james-allen/</loc>
         <lastmod>2020-08-07</lastmod>
     </url>
-	<url>
+    <url>
         <loc>https://www.website.com/people/robert-allen/</loc>
         <lastmod>2020-08-07</lastmod>
     </url>
